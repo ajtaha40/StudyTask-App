@@ -2,7 +2,7 @@ name: Run Tests
 
 on:
   push:
-    branches: [ main, feature/complete-task, feature/task-actions ]
+    branches: [ main ]
   pull_request:
     branches: [ main ]
 
@@ -17,10 +17,14 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Fix Jest permission
+        run: chmod +x ./node_modules/.bin/jest || true
 
       - name: Run tests
-        run: npm test
+        run: npx jest --runInBand
