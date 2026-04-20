@@ -99,10 +99,3 @@ taskList.addEventListener("click", (e) => {
 });
 
 renderTasks();
-if (typeof module !== "undefined") {
-  module.exports = {
-    addTask,
-    renderTasks,
-    saveTasks
-  };
-}
