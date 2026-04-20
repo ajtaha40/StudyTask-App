@@ -1,0 +1,14 @@
+{
+  "name": "studytask-app",
+  "version": "1.0.0",
+  "description": "StudyTask App",
+  "main": "script.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^30.0.0",
+    "jest-environment-jsdom": "^30.3.0",
+    "jsdom": "^26.0.0"
+  }
+}
