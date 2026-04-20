@@ -8,13 +8,12 @@
 </head>
 <body>
   <div class="container">
-    <div button>
     <h1>StudyTask App</h1>
     <p class="subtitle">Manage your study tasks easily</p>
 
     <div class="task-input">
-      <input type="text" id="taskInput" placeholder="Task">
-      <button id="addTaskBtn">Add Task</button> 
+      <input type="text" id="taskSearch" placeholder="Search tasks..." onkeyup="searchTasks()">
+      <button id="addTaskBtn">Add Task</button>
     </div>
 
     <div class="task-list">
@@ -22,9 +21,23 @@
       <ul id="taskList"></ul>
     </div>
   </div>
-<div id="tasksContainer" class="tasks-container"></div>
+
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <div id="addTaskForm">
+        <input type="text" id="taskName" placeholder="Task Name" required>
+        <input type="date" id="dueDate" required>
+        <select id="priority" required>
+          <option value="very important">Very Important</option>
+          <option value="important">Important</option>
+          <option value="neutral">Neutral</option>
+        </select>
+        <button type="button" id="submitTask">Submit</button>
+        <button type="button" id="cancelTask">Cancel</button>
+      </div>
+    </div>
   </div>
-  
+
   <script src="script.js"></script>
 </body>
 </html>
