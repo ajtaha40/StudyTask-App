@@ -66,6 +66,7 @@ h1 {
   list-style: none;
   padding: 0;
 }
+
 .task-item {
   display: flex;
   justify-content: space-between;
