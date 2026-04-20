@@ -66,3 +66,47 @@ h1 {
   list-style: none;
   padding: 0;
 }
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  margin-bottom: 10px;
+  background-color: #eef4fa;
+  border-radius: 8px;
+}
+
+.task-text {
+  flex: 1;
+  font-size: 16px;
+}
+
+.task-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.task-actions button {
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+}
+
+.complete-btn {
+  background-color: #2e8b57;
+}
+
+.edit-btn {
+  background-color: #f0ad4e;
+}
+
+.delete-btn {
+  background-color: #d9534f;
+}
+
+.completed .task-text {
+  text-decoration: line-through;
+  color: #777;
+}
