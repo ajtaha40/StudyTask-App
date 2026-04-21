@@ -3,10 +3,14 @@ const taskInput = document.getElementById("taskInput");
 const dueDateInput = document.getElementById("dueDateInput");
 const priorityInput = document.getElementById("priorityInput");
 const searchInput = document.getElementById("searchInput");
+const filterAllBtn = document.getElementById("filterAll");
+const filterCompletedBtn = document.getElementById("filterCompleted");
+const filterIncompleteBtn = document.getElementById("filterIncomplete");
 const taskList = document.getElementById("taskList");
 const emptyMessage = document.getElementById("emptyMessage");
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+let currentFilter = "all";
 
 // make old tasks safe
 tasks = tasks.map(task => ({
@@ -25,18 +29,27 @@ function renderTasks() {
 
   const searchText = searchInput.value.toLowerCase();
 
-  const filteredTasks = tasks.filter(task =>
+  let filteredTasks = tasks.filter(task =>
     task.text.toLowerCase().includes(searchText)
   );
 
+  if (currentFilter === "completed") {
+    filteredTasks = filteredTasks.filter(task => task.completed);
+  }
+
+  if (currentFilter === "incomplete") {
+    filteredTasks = filteredTasks.filter(task => !task.completed);
+  }
+
   if (filteredTasks.length === 0) {
     emptyMessage.style.display = "block";
+    emptyMessage.textContent = "No tasks found";
     return;
   }
 
   emptyMessage.style.display = "none";
 
-  filteredTasks.forEach((task, index) => {
+  filteredTasks.forEach((task) => {
     const realIndex = tasks.indexOf(task);
 
     const li = document.createElement("li");
@@ -97,6 +110,21 @@ taskInput.addEventListener("keypress", (e) => {
 });
 
 searchInput.addEventListener("input", renderTasks);
+
+filterAllBtn.addEventListener("click", () => {
+  currentFilter = "all";
+  renderTasks();
+});
+
+filterCompletedBtn.addEventListener("click", () => {
+  currentFilter = "completed";
+  renderTasks();
+});
+
+filterIncompleteBtn.addEventListener("click", () => {
+  currentFilter = "incomplete";
+  renderTasks();
+});
 
 taskList.addEventListener("click", (e) => {
   const index = e.target.dataset.index;

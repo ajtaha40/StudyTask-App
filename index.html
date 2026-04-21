@@ -11,6 +11,16 @@
     <h1>StudyTask App</h1>
     <p class="subtitle">Manage your study tasks easily</p>
 
+    <div class="search-box">
+  <input type="text" id="searchInput" placeholder="Search tasks...">
+</div>
+
+<div class="filter-box">
+  <button id="filterAll">All</button>
+  <button id="filterCompleted">Completed</button>
+  <button id="filterIncomplete">Incomplete</button>
+</div>
+
     <div class="task-input">
   <input type="text" id="taskInput" placeholder="Enter a task">
   <input type="date" id="dueDateInput">
@@ -21,9 +31,7 @@
   </select>
   <button id="addTaskBtn">Add Task</button>
 </div>
-<div class="search-box">
-  <input type="text" id="searchInput" placeholder="Search tasks...">
-</div>
+
     <div class="task-list">
       <p id="emptyMessage">No tasks yet</p>
       <ul id="taskList"></ul>
