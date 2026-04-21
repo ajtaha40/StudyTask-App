@@ -110,3 +110,14 @@ h1 {
   text-decoration: line-through;
   color: #777;
 }
+.task-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.due-date {
+  color: #666;
+  font-size: 13px;
+  margin-top: 4px;
+}

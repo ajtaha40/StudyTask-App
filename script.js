@@ -1,5 +1,6 @@
 const addTaskBtn = document.getElementById("addTaskBtn");
 const taskInput = document.getElementById("taskInput");
+const dueDateInput = document.getElementById("dueDateInput");
 const taskList = document.getElementById("taskList");
 const emptyMessage = document.getElementById("emptyMessage");
 
@@ -28,7 +29,10 @@ function renderTasks() {
     }
 
     li.innerHTML = `
-      <span class="task-text">${task.text}</span>
+      <div class="task-info">
+        <span class="task-text">${task.text}</span>
+        <small class="due-date">${task.dueDate ? "Due: " + task.dueDate : "No due date"}</small>
+      </div>
       <div class="task-actions">
         <button class="complete-btn" data-index="${index}">Complete</button>
         <button class="edit-btn" data-index="${index}">Edit</button>
@@ -42,6 +46,7 @@ function renderTasks() {
 
 function addTask() {
   const taskText = taskInput.value.trim();
+  const dueDate = dueDateInput.value;
 
   if (taskText === "") {
     alert("Please enter a task.");
@@ -50,10 +55,12 @@ function addTask() {
 
   tasks.push({
     text: taskText,
-    completed: false
+    completed: false,
+    dueDate: dueDate
   });
 
   taskInput.value = "";
+  dueDateInput.value = "";
   saveTasks();
   renderTasks();
 }
