@@ -3,12 +3,14 @@ const taskList = document.getElementById("taskList");
 const emptyMessage = document.getElementById("emptyMessage");
 const searchInput = document.getElementById("taskSearch");
 const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modalTitle");
 const addTaskForm = document.getElementById("addTaskForm");
 const taskNameInput = document.getElementById("taskName");
 const dueDateInput = document.getElementById("dueDate");
 const prioritySelect = document.getElementById("priority");
 const submitTaskBtn = document.getElementById("submitTask");
 const cancelTaskBtn = document.getElementById("cancelTask");
+let editingIndex = null;
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
@@ -96,6 +98,31 @@ function renderTasks() {
   }
 }
 
+function resetModalForm() {
+  editingIndex = null;
+  modalTitle.textContent = "New Task";
+  submitTaskBtn.textContent = "Submit";
+  taskNameInput.value = "";
+  dueDateInput.value = "";
+  prioritySelect.value = "very important";
+}
+
+function openTaskForm(isEdit = false, index = null) {
+  if (isEdit && index !== null) {
+    editingIndex = index;
+    modalTitle.textContent = "Edit Task";
+    submitTaskBtn.textContent = "Save";
+    taskNameInput.value = tasks[index].name;
+    dueDateInput.value = tasks[index].dueDate;
+    prioritySelect.value = tasks[index].priority;
+  } else {
+    resetModalForm();
+  }
+
+  modal.style.display = "flex";
+  taskNameInput.focus();
+}
+
 function addTask() {
   const name = taskNameInput.value.trim();
   const dueDate = dueDateInput.value;
@@ -106,16 +133,20 @@ function addTask() {
     return;
   }
 
-  tasks.push({
-    name,
-    dueDate,
-    priority,
-    completed: false
-  });
+  if (editingIndex !== null) {
+    tasks[editingIndex].name = name;
+    tasks[editingIndex].dueDate = dueDate;
+    tasks[editingIndex].priority = priority;
+  } else {
+    tasks.push({
+      name,
+      dueDate,
+      priority,
+      completed: false
+    });
+  }
 
-  taskNameInput.value = "";
-  dueDateInput.value = "";
-  prioritySelect.value = "very important";
+  resetModalForm();
   modal.style.display = "none";
   saveTasks();
   renderTasks();
@@ -135,16 +166,14 @@ function searchTasks() {
 }
 
 addTaskBtn.addEventListener("click", () => {
-  modal.style.display = "flex";
+  openTaskForm(false);
 });
 
 submitTaskBtn.addEventListener("click", addTask);
 
 cancelTaskBtn.addEventListener("click", () => {
   modal.style.display = "none";
-  taskNameInput.value = "";
-  dueDateInput.value = "";
-  prioritySelect.value = "very important";
+  resetModalForm();
 });
 
 taskList.addEventListener("click", (e) => {
@@ -159,17 +188,8 @@ taskList.addEventListener("click", (e) => {
   }
 
   if (e.target.classList.contains("edit-btn")) {
-    const updatedName = prompt("Edit task name:", tasks[index].name);
-    const updatedDueDate = prompt("Edit due date (YYYY-MM-DD):", tasks[index].dueDate);
-    const updatedPriority = prompt("Edit priority (very important/important/neutral):", tasks[index].priority);
-
-    if (updatedName !== null && updatedName.trim() !== "" && updatedDueDate !== null && updatedDueDate.trim() !== "" && updatedPriority !== null && ["very important", "important", "neutral"].includes(updatedPriority)) {
-      tasks[index].name = updatedName.trim();
-      tasks[index].dueDate = updatedDueDate.trim();
-      tasks[index].priority = updatedPriority;
-      saveTasks();
-      renderTasks();
-    }
+    openTaskForm(true, Number(index));
+    return;
   }
 
   if (e.target.classList.contains("delete-btn")) {
