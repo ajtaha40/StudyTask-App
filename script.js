@@ -3,12 +3,14 @@ const taskList = document.getElementById("taskList");
 const emptyMessage = document.getElementById("emptyMessage");
 const searchInput = document.getElementById("taskSearch");
 const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modalTitle");
 const addTaskForm = document.getElementById("addTaskForm");
 const taskNameInput = document.getElementById("taskName");
 const dueDateInput = document.getElementById("dueDate");
 const prioritySelect = document.getElementById("priority");
 const submitTaskBtn = document.getElementById("submitTask");
 const cancelTaskBtn = document.getElementById("cancelTask");
+let editingIndex = null;
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
@@ -30,10 +32,38 @@ function saveTasks() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
 
+function resetModalForm() {
+  editingIndex = null;
+  modalTitle.textContent = "New Task";
+  submitTaskBtn.textContent = "Submit";
+  taskNameInput.value = "";
+  dueDateInput.value = "";
+  prioritySelect.value = "very important";
+}
+
+function openTaskForm(isEdit = false, index = null) {
+  if (isEdit && index !== null) {
+    editingIndex = index;
+    modalTitle.textContent = "Edit Task";
+    submitTaskBtn.textContent = "Save";
+    taskNameInput.value = tasks[index].name;
+    dueDateInput.value = tasks[index].dueDate;
+    prioritySelect.value = tasks[index].priority;
+  } else {
+    resetModalForm();
+  }
+
+  modal.style.display = "flex";
+  taskNameInput.focus();
+}
+
 function renderTasks() {
-  // Sort tasks: by dueDate, then by priority (very important first), then alphabetical
+  const incomplete = tasks.filter(t => !t.completed);
+  const completed = tasks.filter(t => t.completed);
+
+  // Sort incomplete: by dueDate, then by priority (very important first), then alphabetical
   const priorityOrder = { "very important": 1, "important": 2, "neutral": 3 };
-  tasks.sort((a, b) => {
+  incomplete.sort((a, b) => {
     if (a.dueDate !== b.dueDate) {
       return a.dueDate.localeCompare(b.dueDate);
     }
@@ -43,18 +73,21 @@ function renderTasks() {
     return a.name.localeCompare(b.name);
   });
 
+  // Sort completed by completedAt desc
+  completed.sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+
   taskList.innerHTML = "";
 
-  if (tasks.length === 0) {
+  if (incomplete.length === 0 && completed.length === 0) {
     emptyMessage.style.display = "block";
     return;
   }
 
   emptyMessage.style.display = "none";
 
-  // Group by dueDate
+  // Render incomplete tasks grouped by dueDate
   const grouped = {};
-  tasks.forEach(task => {
+  incomplete.forEach(task => {
     if (!grouped[task.dueDate]) {
       grouped[task.dueDate] = [];
     }
@@ -69,13 +102,9 @@ function renderTasks() {
     const ul = document.createElement("ul");
     ul.className = "task-group";
 
-    grouped[date].forEach((task, index) => {
+    grouped[date].forEach((task) => {
       const li = document.createElement("li");
       li.className = "task-item";
-
-      if (task.completed) {
-        li.classList.add("completed");
-      }
 
       const priorityMarks = { "very important": 3, "important": 2, "neutral": 1 };
       const normalizedPriority = String(task.priority).toLowerCase();
@@ -86,6 +115,33 @@ function renderTasks() {
           <button class="edit-btn" data-index="${tasks.indexOf(task)}" title="Edit">✏️</button>
           <button class="delete-btn" data-index="${tasks.indexOf(task)}" title="Delete">🗑️</button>
           <button class="priority-btn">${'!'.repeat(priorityMarks[normalizedPriority] || 1)}</button>
+        </div>
+      `;
+
+      ul.appendChild(li);
+    });
+
+    taskList.appendChild(ul);
+  }
+
+  // Render completed tasks
+  if (completed.length > 0) {
+    const completedHeader = document.createElement("h3");
+    completedHeader.textContent = "Completed Tasks";
+    taskList.appendChild(completedHeader);
+
+    const ul = document.createElement("ul");
+    ul.className = "task-group";
+
+    completed.forEach((task) => {
+      const li = document.createElement("li");
+      li.className = "task-item completed";
+
+      const completedDate = new Date(task.completedAt).toLocaleDateString();
+      li.innerHTML = `
+        <span class="task-text">${task.name} - Completed on ${completedDate}</span>
+        <div class="task-actions">
+          <button class="delete-btn" data-index="${tasks.indexOf(task)}" title="Delete">🗑️</button>
         </div>
       `;
 
@@ -106,16 +162,20 @@ function addTask() {
     return;
   }
 
-  tasks.push({
-    name,
-    dueDate,
-    priority,
-    completed: false
-  });
+  if (editingIndex !== null) {
+    tasks[editingIndex].name = name;
+    tasks[editingIndex].dueDate = dueDate;
+    tasks[editingIndex].priority = priority;
+  } else {
+    tasks.push({
+      name,
+      dueDate,
+      priority,
+      completed: false
+    });
+  }
 
-  taskNameInput.value = "";
-  dueDateInput.value = "";
-  prioritySelect.value = "very important";
+  resetModalForm();
   modal.style.display = "none";
   saveTasks();
   renderTasks();
@@ -135,16 +195,14 @@ function searchTasks() {
 }
 
 addTaskBtn.addEventListener("click", () => {
-  modal.style.display = "flex";
+  openTaskForm(false);
 });
 
 submitTaskBtn.addEventListener("click", addTask);
 
 cancelTaskBtn.addEventListener("click", () => {
   modal.style.display = "none";
-  taskNameInput.value = "";
-  dueDateInput.value = "";
-  prioritySelect.value = "very important";
+  resetModalForm();
 });
 
 taskList.addEventListener("click", (e) => {
@@ -154,22 +212,18 @@ taskList.addEventListener("click", (e) => {
 
   if (e.target.classList.contains("complete-btn")) {
     tasks[index].completed = !tasks[index].completed;
+    if (tasks[index].completed) {
+      tasks[index].completedAt = new Date().toISOString();
+    } else {
+      delete tasks[index].completedAt;
+    }
     saveTasks();
     renderTasks();
   }
 
   if (e.target.classList.contains("edit-btn")) {
-    const updatedName = prompt("Edit task name:", tasks[index].name);
-    const updatedDueDate = prompt("Edit due date (YYYY-MM-DD):", tasks[index].dueDate);
-    const updatedPriority = prompt("Edit priority (very important/important/neutral):", tasks[index].priority);
-
-    if (updatedName !== null && updatedName.trim() !== "" && updatedDueDate !== null && updatedDueDate.trim() !== "" && updatedPriority !== null && ["very important", "important", "neutral"].includes(updatedPriority)) {
-      tasks[index].name = updatedName.trim();
-      tasks[index].dueDate = updatedDueDate.trim();
-      tasks[index].priority = updatedPriority;
-      saveTasks();
-      renderTasks();
-    }
+    openTaskForm(true, Number(index));
+    return;
   }
 
   if (e.target.classList.contains("delete-btn")) {
