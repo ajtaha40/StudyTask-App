@@ -53,71 +53,6 @@ h1 {
   background-color: #163a5a;
 }
 
-#addTaskForm {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-#addTaskForm input, #addTaskForm select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-#addTaskForm button {
-  padding: 10px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-#submitTask {
-  background-color: #28a745;
-  color: white;
-}
-
-#cancelTask {
-  background-color: #dc3545;
-  color: white;
-}
-
-.modal {
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0,0,0,0.4);
-  display: none;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 400px;
-}
-
-.task-group {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 20px;
-}
-
-#taskList h3 {
-  margin: 20px 0 10px 0;
-  color: #1f4e79;
-  font-family: serif;
-}
-
 .task-list {
   margin-top: 20px;
 }
@@ -131,7 +66,6 @@ h1 {
   list-style: none;
   padding: 0;
 }
-
 .task-item {
   display: flex;
   justify-content: space-between;
@@ -149,12 +83,12 @@ h1 {
 
 .task-actions {
   display: flex;
-  gap: 5px;
+  gap: 8px;
 }
 
 .task-actions button {
-  padding: 8px 12px;
   border: none;
+  padding: 8px 12px;
   border-radius: 6px;
   cursor: pointer;
   color: white;
@@ -169,17 +103,44 @@ h1 {
 }
 
 .delete-btn {
-  background-color: black;
-  font-weight: bold;
-}
-
-.priority-btn {
-  background-color: red;
-  color: black;
-  font-weight: bold;
+  background-color: #d9534f;
 }
 
 .completed .task-text {
   text-decoration: line-through;
   color: #777;
+}
+.task-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.due-date {
+  color: #666;
+  font-size: 13px;
+  margin-top: 4px;
+}
+.priority {
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: bold;
+}
+
+.priority.high {
+  color: #d9534f;
+}
+
+.priority.medium {
+  color: #f0ad4e;
+}
+
+.priority.low {
+  color: #2e8b57;
+}
+
+.task-input select {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
 }
