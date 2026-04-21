@@ -144,3 +144,13 @@ h1 {
   border: 1px solid #ccc;
   border-radius: 8px;
 }
+.search-box {
+  margin-bottom: 20px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}

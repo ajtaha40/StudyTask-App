@@ -2,12 +2,13 @@ const addTaskBtn = document.getElementById("addTaskBtn");
 const taskInput = document.getElementById("taskInput");
 const dueDateInput = document.getElementById("dueDateInput");
 const priorityInput = document.getElementById("priorityInput");
+const searchInput = document.getElementById("searchInput");
 const taskList = document.getElementById("taskList");
 const emptyMessage = document.getElementById("emptyMessage");
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-// make old tasks safe if they don't have dueDate or priority
+// make old tasks safe
 tasks = tasks.map(task => ({
   text: task.text || "",
   completed: task.completed || false,
@@ -22,14 +23,22 @@ function saveTasks() {
 function renderTasks() {
   taskList.innerHTML = "";
 
-  if (tasks.length === 0) {
+  const searchText = searchInput.value.toLowerCase();
+
+  const filteredTasks = tasks.filter(task =>
+    task.text.toLowerCase().includes(searchText)
+  );
+
+  if (filteredTasks.length === 0) {
     emptyMessage.style.display = "block";
     return;
   }
 
   emptyMessage.style.display = "none";
 
-  tasks.forEach((task, index) => {
+  filteredTasks.forEach((task, index) => {
+    const realIndex = tasks.indexOf(task);
+
     const li = document.createElement("li");
     li.className = "task-item";
 
@@ -44,9 +53,9 @@ function renderTasks() {
         <small class="priority ${task.priority.toLowerCase()}">Priority: ${task.priority}</small>
       </div>
       <div class="task-actions">
-        <button class="complete-btn" data-index="${index}">Complete</button>
-        <button class="edit-btn" data-index="${index}">Edit</button>
-        <button class="delete-btn" data-index="${index}">Delete</button>
+        <button class="complete-btn" data-index="${realIndex}">Complete</button>
+        <button class="edit-btn" data-index="${realIndex}">Edit</button>
+        <button class="delete-btn" data-index="${realIndex}">Delete</button>
       </div>
     `;
 
@@ -86,6 +95,8 @@ taskInput.addEventListener("keypress", (e) => {
     addTask();
   }
 });
+
+searchInput.addEventListener("input", renderTasks);
 
 taskList.addEventListener("click", (e) => {
   const index = e.target.dataset.index;
