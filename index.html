@@ -8,12 +8,37 @@
 </head>
 <body>
   <div class="container">
+<div class="login-box" id="loginBox">
+  <input type="text" id="usernameInput" placeholder="Enter your name">
+  <button id="loginBtn">Login</button>
+</div>
+
+<div class="welcome-box" id="welcomeBox" style="display: none;">
+  <p id="welcomeMessage"></p>
+  <button id="logoutBtn">Logout</button>
+</div>
+
     <h1>StudyTask App</h1>
     <p class="subtitle">Manage your study tasks easily</p>
 
     <div class="top-controls">
       <button id="darkModeToggle">Toggle Dark Mode</button>
     </div>
+
+  <div class="dashboard">
+    <div class="summary-card">
+    <h3>Total Tasks</h3>
+    <p id="totalTasks">0</p>
+  </div>
+  <div class="summary-card">
+    <h3>Completed</h3>
+    <p id="completedTasks">0</p>
+  </div>
+  <div class="summary-card">
+    <h3>Incomplete</h3>
+    <p id="incompleteTasks">0</p>
+  </div>
+</div>
 
     <div class="search-box">
       <input type="text" id="searchInput" placeholder="Search tasks...">

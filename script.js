@@ -9,21 +9,57 @@ const filterIncompleteBtn = document.getElementById("filterIncomplete");
 const taskList = document.getElementById("taskList");
 const emptyMessage = document.getElementById("emptyMessage");
 const darkModeToggle = document.getElementById("darkModeToggle");
+const totalTasks = document.getElementById("totalTasks");
+const completedTasks = document.getElementById("completedTasks");
+const incompleteTasks = document.getElementById("incompleteTasks");
 
-let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+const usernameInput = document.getElementById("usernameInput");
+const loginBtn = document.getElementById("loginBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const loginBox = document.getElementById("loginBox");
+const welcomeBox = document.getElementById("welcomeBox");
+const welcomeMessage = document.getElementById("welcomeMessage");
+
+let currentUser = localStorage.getItem("currentUser") || "";
+let tasks = [];
 let currentFilter = "all";
 
-// make old tasks safe
-tasks = tasks.map(task => ({
-  text: task.text || "",
-  completed: task.completed || false,
-  dueDate: task.dueDate || "",
-  priority: task.priority || "High"
-}));
+function getUserTasksKey(username) {
+  return `tasks_${username}`;
+}
+
+function loadTasks() {
+  if (currentUser) {
+    tasks = JSON.parse(localStorage.getItem(getUserTasksKey(currentUser))) || [];
+  } else {
+    tasks = [];
+  }
+
+  tasks = tasks.map(task => ({
+    text: task.text || "",
+    completed: task.completed || false,
+    dueDate: task.dueDate || "",
+    priority: task.priority || "High"
+  }));
+}
 
 function saveTasks() {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
+  if (currentUser) {
+    localStorage.setItem(getUserTasksKey(currentUser), JSON.stringify(tasks));
+  }
 }
+
+function updateLoginUI() {
+  if (currentUser) {
+    loginBox.style.display = "none";
+    welcomeBox.style.display = "flex";
+    welcomeMessage.textContent = `Welcome, ${currentUser}`;
+  } else {
+    loginBox.style.display = "flex";
+    welcomeBox.style.display = "none";
+  }
+}
+
 if (localStorage.getItem("darkMode") === "enabled") {
   document.body.classList.add("dark-mode");
 }
@@ -37,7 +73,15 @@ darkModeToggle.addEventListener("click", () => {
     localStorage.setItem("darkMode", "disabled");
   }
 });
+
+function updateDashboard() {
+  totalTasks.textContent = tasks.length;
+  completedTasks.textContent = tasks.filter(task => task.completed).length;
+  incompleteTasks.textContent = tasks.filter(task => !task.completed).length;
+}
+
 function renderTasks() {
+  updateDashboard();
   taskList.innerHTML = "";
 
   const searchText = searchInput.value.toLowerCase();
@@ -56,7 +100,7 @@ function renderTasks() {
 
   if (filteredTasks.length === 0) {
     emptyMessage.style.display = "block";
-    emptyMessage.textContent = "No tasks found";
+    emptyMessage.textContent = currentUser ? "No tasks found" : "Please log in first";
     return;
   }
 
@@ -90,6 +134,11 @@ function renderTasks() {
 }
 
 function addTask() {
+  if (!currentUser) {
+    alert("Please log in first.");
+    return;
+  }
+
   const taskText = taskInput.value.trim();
   const dueDate = dueDateInput.value;
   const priority = priorityInput.value;
@@ -113,6 +162,29 @@ function addTask() {
   saveTasks();
   renderTasks();
 }
+
+loginBtn.addEventListener("click", () => {
+  const username = usernameInput.value.trim();
+
+  if (username === "") {
+    alert("Please enter your name.");
+    return;
+  }
+
+  currentUser = username;
+  localStorage.setItem("currentUser", currentUser);
+  loadTasks();
+  updateLoginUI();
+  renderTasks();
+});
+
+logoutBtn.addEventListener("click", () => {
+  currentUser = "";
+  localStorage.removeItem("currentUser");
+  tasks = [];
+  updateLoginUI();
+  renderTasks();
+});
 
 addTaskBtn.addEventListener("click", addTask);
 
@@ -175,4 +247,6 @@ taskList.addEventListener("click", (e) => {
   }
 });
 
+updateLoginUI();
+loadTasks();
 renderTasks();
