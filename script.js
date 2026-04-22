@@ -9,8 +9,17 @@ const filterIncompleteBtn = document.getElementById("filterIncomplete");
 const taskList = document.getElementById("taskList");
 const emptyMessage = document.getElementById("emptyMessage");
 
+// Modal elements
+const editModal = document.getElementById("editModal");
+const editForm = document.getElementById("editForm");
+const editTaskInput = document.getElementById("editTaskInput");
+const editDueDateInput = document.getElementById("editDueDateInput");
+const editPriorityInput = document.getElementById("editPriorityInput");
+const closeModal = document.querySelector(".close");
+
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let currentFilter = "all";
+let editingIndex = -1;
 
 // make old tasks safe
 tasks = tasks.map(task => ({
@@ -40,6 +49,22 @@ function renderTasks() {
   if (currentFilter === "incomplete") {
     filteredTasks = filteredTasks.filter(task => !task.completed);
   }
+
+  // Sort tasks by due date (earliest first), then by priority (High > Medium > Low)
+  filteredTasks.sort((a, b) => {
+    if (!a.dueDate && !b.dueDate) {
+      // Both no due date, sort by priority
+      const priorityOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
+      return priorityOrder[b.priority] - priorityOrder[a.priority];
+    }
+    if (!a.dueDate) return 1;
+    if (!b.dueDate) return -1;
+    const dateCompare = a.dueDate.localeCompare(b.dueDate);
+    if (dateCompare !== 0) return dateCompare;
+    // Same due date, sort by priority
+    const priorityOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
+    return priorityOrder[b.priority] - priorityOrder[a.priority];
+  });
 
   if (filteredTasks.length === 0) {
     emptyMessage.style.display = "block";
@@ -138,17 +163,11 @@ taskList.addEventListener("click", (e) => {
   }
 
   if (e.target.classList.contains("edit-btn")) {
-    const updatedText = prompt("Edit your task:", tasks[index].text);
-    const updatedDueDate = prompt("Edit due date (YYYY-MM-DD):", tasks[index].dueDate || "");
-    const updatedPriority = prompt("Edit priority (High / Medium / Low):", tasks[index].priority || "High");
-
-    if (updatedText !== null && updatedText.trim() !== "") {
-      tasks[index].text = updatedText.trim();
-      tasks[index].dueDate = updatedDueDate;
-      tasks[index].priority = updatedPriority || "High";
-      saveTasks();
-      renderTasks();
-    }
+    editingIndex = parseInt(index);
+    editTaskInput.value = tasks[editingIndex].text;
+    editDueDateInput.value = tasks[editingIndex].dueDate;
+    editPriorityInput.value = tasks[editingIndex].priority;
+    editModal.style.display = "block";
   }
 
   if (e.target.classList.contains("delete-btn")) {
@@ -163,3 +182,29 @@ taskList.addEventListener("click", (e) => {
 });
 
 renderTasks();
+
+// Modal event listeners
+editForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+  const updatedText = editTaskInput.value.trim();
+  if (updatedText === "") {
+    alert("Please enter a task.");
+    return;
+  }
+  tasks[editingIndex].text = updatedText;
+  tasks[editingIndex].dueDate = editDueDateInput.value;
+  tasks[editingIndex].priority = editPriorityInput.value;
+  saveTasks();
+  renderTasks();
+  editModal.style.display = "none";
+});
+
+closeModal.addEventListener("click", () => {
+  editModal.style.display = "none";
+});
+
+window.addEventListener("click", (e) => {
+  if (e.target === editModal) {
+    editModal.style.display = "none";
+  }
+});
