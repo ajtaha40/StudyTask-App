@@ -8,6 +8,7 @@ const filterCompletedBtn = document.getElementById("filterCompleted");
 const filterIncompleteBtn = document.getElementById("filterIncomplete");
 const taskList = document.getElementById("taskList");
 const emptyMessage = document.getElementById("emptyMessage");
+const darkModeToggle = document.getElementById("darkModeToggle");
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let currentFilter = "all";
@@ -23,7 +24,19 @@ tasks = tasks.map(task => ({
 function saveTasks() {
   localStorage.setItem("tasks", JSON.stringify(tasks));
 }
+if (localStorage.getItem("darkMode") === "enabled") {
+  document.body.classList.add("dark-mode");
+}
 
+darkModeToggle.addEventListener("click", () => {
+  document.body.classList.toggle("dark-mode");
+
+  if (document.body.classList.contains("dark-mode")) {
+    localStorage.setItem("darkMode", "enabled");
+  } else {
+    localStorage.setItem("darkMode", "disabled");
+  }
+});
 function renderTasks() {
   taskList.innerHTML = "";
 

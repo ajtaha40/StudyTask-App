@@ -222,3 +222,55 @@ h1 {
     flex-wrap: wrap;
   }
 }
+.top-controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.top-controls button {
+  padding: 10px 16px;
+  border: none;
+  background-color: #1f4e79;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.top-controls button:hover {
+  background-color: #163a5a;
+}
+
+.dark-mode {
+  background-color: #1e1e1e;
+  color: white;
+}
+
+.dark-mode .container {
+  background-color: #2b2b2b;
+  color: white;
+}
+
+.dark-mode h1,
+.dark-mode .subtitle,
+.dark-mode .task-text {
+  color: white;
+}
+
+.dark-mode .due-date,
+.dark-mode #emptyMessage {
+  color: #ddd;
+}
+
+.dark-mode .task-item {
+  background-color: #3a3a3a;
+}
+
+.dark-mode .search-box input,
+.dark-mode .task-input input,
+.dark-mode .task-input select {
+  background-color: #444;
+  color: white;
+  border: 1px solid #666;
+}
