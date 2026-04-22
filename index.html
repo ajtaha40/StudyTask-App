@@ -8,33 +8,62 @@
 </head>
 <body>
   <div class="container">
+<div class="login-box" id="loginBox">
+  <input type="text" id="usernameInput" placeholder="Enter your name">
+  <button id="loginBtn">Login</button>
+</div>
+
+<div class="welcome-box" id="welcomeBox" style="display: none;">
+  <p id="welcomeMessage"></p>
+  <button id="logoutBtn">Logout</button>
+</div>
+
     <h1>StudyTask App</h1>
     <p class="subtitle">Manage your study tasks easily</p>
 
+    <div class="top-controls">
+      <button id="darkModeToggle">Toggle Dark Mode</button>
+    </div>
+
+  <div class="dashboard">
+    <div class="summary-card">
+    <h3>Total Tasks</h3>
+    <p id="totalTasks">0</p>
+  </div>
+  <div class="summary-card">
+    <h3>Completed</h3>
+    <p id="completedTasks">0</p>
+  </div>
+  <div class="summary-card">
+    <h3>Incomplete</h3>
+    <p id="incompleteTasks">0</p>
+  </div>
+</div>
+
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search tasks...">
+    </div>
+
+    <div class="filter-box">
+      <button id="filterAll">All</button>
+      <button id="filterCompleted">Completed</button>
+      <button id="filterIncomplete">Incomplete</button>
+    </div>
+
     <div class="task-input">
-      <input type="text" id="taskSearch" placeholder="Search tasks..." onkeyup="searchTasks()">
+      <input type="text" id="taskInput" placeholder="Enter a task">
+      <input type="date" id="dueDateInput">
+      <select id="priorityInput">
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
+      </select>
       <button id="addTaskBtn">Add Task</button>
     </div>
 
     <div class="task-list">
       <p id="emptyMessage">No tasks yet</p>
       <ul id="taskList"></ul>
-    </div>
-  </div>
-
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <div id="addTaskForm">
-        <input type="text" id="taskName" placeholder="Task Name" required>
-        <input type="date" id="dueDate" required>
-        <select id="priority" required>
-          <option value="very important">Very Important</option>
-          <option value="important">Important</option>
-          <option value="neutral">Neutral</option>
-        </select>
-        <button type="button" id="submitTask">Submit</button>
-        <button type="button" id="cancelTask">Cancel</button>
-      </div>
     </div>
   </div>
 
