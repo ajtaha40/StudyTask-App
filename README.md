@@ -94,6 +94,7 @@ Install dependencies and run tests:
 ```
 npm install
 npm test
+npm start
 ```
 
 ---
